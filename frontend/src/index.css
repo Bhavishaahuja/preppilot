@@ -23,3 +23,18 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
+/* Full source URLs only show up in the printed/exported PDF, not on screen. */
+.print-url { display: none; }
+
+@media print {
+  header { display: none !important; }
+  .no-print { display: none !important; }
+  body { background: #ffffff !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* Stack the two columns so nothing gets clipped off the page. */
+  .briefing-grid { display: block !important; padding: 0 !important; }
+  .briefing-grid > div { width: 100% !important; }
+  .briefing-card { break-inside: avoid; margin-bottom: 14px; }
+  .print-url { display: block !important; }
+  a { text-decoration: none; color: inherit; }
+}

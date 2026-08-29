@@ -17,3 +17,8 @@ TODAY = date.today().strftime("%B %Y")   # e.g. "August 2026"
 
 anthropic_client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+
+# Optional: if these are set, the API verifies each caller's Supabase login token.
+# Leave them unset for local dev and the API runs open (no auth check).
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")

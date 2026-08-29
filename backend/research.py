@@ -1,13 +1,15 @@
 # research.py
-# Take the research plan and actually search the web for each question using Tavily.
+# Take the research plan and search the web for every question using Tavily.
+# All searches run CONCURRENTLY (Tavily's client is blocking, so threads give us
+# a big speedup) instead of one-at-a-time. This is the main fix for the ~90s wait.
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from config import tavily_client
 from plan import make_research_plan
 
 
 def research_question(question):
     # Search the web for one question and keep the top few results.
-    # search_depth="advanced" gives cleaner, more relevant results than the default.
     try:
         response = tavily_client.search(
             query=question,
@@ -29,26 +31,46 @@ def research_question(question):
     return findings
 
 
-def run_research(person, company, user_context=""):
-    # First get the plan, then search every question in it.
-    plan = make_research_plan(person, company, user_context)
+def run_research(person, company, user_context="", person_linkedin=""):
+    # First get the plan, then search every question in it -- all at once.
+    plan = make_research_plan(person, company, user_context, person_linkedin)
 
-    researched = {}
+    # Flatten the plan into a flat list of (angle, question) so we can fire
+    # every search in parallel instead of looping through them sequentially.
+    tasks = []
     for angle, questions in plan.items():
-        # A value might come back as a single string, so wrap it in a list.
         if isinstance(questions, str):
             questions = [questions]
-
-        angle_findings = []
         for question in questions:
-            print(f"Searching: {question}")   # progress so you see it working
-            results = research_question(question)
-            angle_findings.append({
+            tasks.append((angle, question))
+
+    if not tasks:
+        return {}
+
+    results_by_angle = {}
+    # ~12 questions -> a dozen workers means the whole research step takes about as
+    # long as a single search (a few seconds) rather than the sum of all of them.
+    with ThreadPoolExecutor(max_workers=min(12, len(tasks))) as pool:
+        future_map = {
+            pool.submit(research_question, question): (angle, question)
+            for angle, question in tasks
+        }
+        for future in as_completed(future_map):
+            angle, question = future_map[future]
+            try:
+                results = future.result()
+            except Exception:
+                results = []
+            results_by_angle.setdefault(angle, []).append({
                 "question": question,
                 "results": results,
             })
-        researched[angle] = angle_findings
 
+    # Re-emit angles in the plan's original order so the dossier reads naturally.
+    researched = {}
+    for angle in plan.keys():
+        if angle in results_by_angle:
+            researched[angle] = results_by_angle[angle]
     return researched
 
 

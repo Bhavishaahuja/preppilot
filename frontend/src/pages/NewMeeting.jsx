@@ -14,20 +14,44 @@ const angles = [
   "How they can help you",
 ]
 
+// If they gave a LinkedIn URL but no name, make a readable name out of the /in/ slug
+// (e.g. linkedin.com/in/jordan-ellis-1a2b -> "Jordan Ellis").
+function nameFromLinkedin(url) {
+  try {
+    const m = url.match(/linkedin\.com\/in\/([^/?#]+)/i)
+    if (!m) return ""
+    let slug = decodeURIComponent(m[1])
+      .replace(/-[0-9a-z]{6,}$/i, "")   // strip a trailing hash segment
+      .replace(/-?\d+$/,"")              // strip trailing numbers
+    return slug.split("-").filter(Boolean)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+  } catch {
+    return ""
+  }
+}
+
 function NewMeeting() {
   const [person, setPerson] = useState("")
   const [company, setCompany] = useState("")
+  const [linkedin, setLinkedin] = useState("")
   const [goal, setGoal] = useState("")
-  const { runBriefing } = useBriefing()
+  const { runBriefing, userName } = useBriefing()
   const navigate = useNavigate()
 
   function handleSubmit() {
-    // Kick off the research, then show the working screen while it runs.
-    runBriefing({ person, company, goal })
+    // Use the typed name, or fall back to a name derived from the LinkedIn URL.
+    const effectivePerson = person.trim() || nameFromLinkedin(linkedin.trim())
+    runBriefing({
+      person: effectivePerson,
+      company: company.trim(),
+      goal,
+      personLinkedin: linkedin.trim(),
+    })
     navigate("/working")
   }
 
-  const canSubmit = person.trim() && company.trim()
+  // Ready to go once we have a company and either a name or a LinkedIn URL.
+  const canSubmit = (person.trim() || linkedin.trim()) && company.trim()
 
   return (
     <div className="flex justify-center px-14 py-16">
@@ -36,7 +60,7 @@ function NewMeeting() {
         <div className="flex flex-col items-center gap-3">
           <h1 className="font-serif text-[42px] leading-tight font-medium tracking-tight">Who are you meeting?</h1>
           <p className="max-w-[500px] text-[15.5px] leading-relaxed text-muted">
-            Give me the person and company. I'll research them across six angles and hand you a cited briefing in about a minute.
+            Give me the person and company, or just paste their LinkedIn. I'll research them across six angles and hand you a cited briefing in about twenty seconds.
           </p>
         </div>
 
@@ -51,6 +75,11 @@ function NewMeeting() {
               <label className="text-[13px] font-medium text-[#4A4842]">Company</label>
               <input className={inputClass} value={company} onChange={(e) => setCompany(e.target.value)} placeholder="e.g. Beacon Consulting" />
             </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-[13px] font-medium text-[#4A4842]">Their LinkedIn URL <span className="font-normal text-faint">(optional — helps pin down the right person)</span></label>
+            <input className={inputClass} value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://www.linkedin.com/in/jordan-ellis" />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -75,7 +104,7 @@ function NewMeeting() {
           <div className="flex items-center justify-between pt-0.5">
             <div className="flex items-center gap-2 text-xs text-faint">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-              <span>About a minute · live web search</span>
+              <span>About twenty seconds · live web search</span>
             </div>
             <button
               onClick={handleSubmit}
@@ -90,7 +119,7 @@ function NewMeeting() {
         </div>
 
         <div className="text-[13px] text-faint">
-          Prepping as <span className="font-medium text-[#4A4842]">Bhavi</span> · <Link to="/profile" className="text-accent hover:text-accent-ink">edit profile</Link>
+          Prepping as <span className="font-medium text-[#4A4842]">{userName || "you"}</span> · <Link to="/profile" className="text-accent hover:text-accent-ink">edit profile</Link>
         </div>
 
       </div>

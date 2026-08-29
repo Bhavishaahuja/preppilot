@@ -1,7 +1,11 @@
 # api_pipeline.py
 # Runs the full research + briefing pipeline and returns structured data the UI can render.
 
-import json
+import re
+from concurrent.futures import ThreadPoolExecutor
+
+import requests
+
 from config import anthropic_client, MODEL
 from research import run_research
 
@@ -18,6 +22,46 @@ def collect_sources(research_data):
                     seen_urls.add(url)
                     sources.append({"title": result["title"], "url": url})
     return sources
+
+
+def fetch_target_photo(person_linkedin):
+    # Best-effort: try to read the LinkedIn profile's preview image (og:image) from the
+    # URL the user pasted. LinkedIn blocks bots aggressively, so this frequently returns
+    # nothing -- that's expected, and the UI falls back to a grey initials avatar.
+    # We only trust real profile media (media.licdn.com) so we never show LinkedIn's
+    # generic banner as if it were the person's face.
+    if not person_linkedin or "linkedin.com" not in person_linkedin:
+        return None
+    try:
+        resp = requests.get(
+            person_linkedin,
+            timeout=6,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                ),
+                "Accept-Language": "en-US,en;q=0.9",
+            },
+        )
+        if resp.status_code != 200:
+            return None
+        html = resp.text
+        match = re.search(
+            r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
+            html, re.I,
+        ) or re.search(
+            r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']',
+            html, re.I,
+        )
+        if not match:
+            return None
+        image_url = match.group(1).replace("&amp;", "&")
+        if "media.licdn.com" in image_url:
+            return image_url
+        return None
+    except Exception:
+        return None
 
 
 def dossier_to_text(research_data):
@@ -120,11 +164,16 @@ RESEARCH:
     }
 
 
-def generate_briefing(person, company, goal, profile):
+def generate_briefing(person, company, goal, profile, person_linkedin=""):
     # The whole pipeline in one call: research, then structured briefing, then attach sources.
     user_context = f"My background: {profile}\nWhat I want from this meeting: {goal}"
 
-    research_data = run_research(person, company, user_context)
+    # Kick off the (best-effort) photo fetch in the background so it overlaps with the
+    # research and costs us basically no extra wall-clock time.
+    photo_pool = ThreadPoolExecutor(max_workers=1)
+    photo_future = photo_pool.submit(fetch_target_photo, person_linkedin)
+
+    research_data = run_research(person, company, user_context, person_linkedin)
     dossier_text = dossier_to_text(research_data)
 
     briefing = write_briefing_json(person, company, dossier_text, user_context)
@@ -132,6 +181,14 @@ def generate_briefing(person, company, goal, profile):
     # Add the metadata and the full source list the UI needs.
     briefing["person"] = person
     briefing["company"] = company
+    briefing["person_linkedin"] = person_linkedin
     briefing["sources"] = collect_sources(research_data)
+
+    try:
+        briefing["photo_url"] = photo_future.result(timeout=8)
+    except Exception:
+        briefing["photo_url"] = None
+    finally:
+        photo_pool.shutdown(wait=False)
 
     return briefing

@@ -5,7 +5,7 @@ import json
 from config import anthropic_client, MODEL, TODAY
 
 
-def make_research_plan(person, company, user_context=""):
+def make_research_plan(person, company, user_context="", person_linkedin=""):
     # If we know who the user is, tell Claude so the connection angles get specific.
     about_me = ""
     if user_context:
@@ -15,9 +15,15 @@ Here is context about me, the person doing the research:
 Use this so the connection_points, how_i_can_help_them, and how_they_can_benefit_me angles are specific to me, not generic.
 """
 
+    # If the user pasted the person's LinkedIn URL, hand it to Claude as an anchor so
+    # the questions target the right individual (helpful for common names).
+    linkedin_hint = ""
+    if person_linkedin:
+        linkedin_hint = f"\nThe person's LinkedIn profile is: {person_linkedin}\nUse it to identify the right person and you may search that URL directly.\n"
+
     prompt = f"""You are a meeting-prep research assistant.
 Today's date is {TODAY}. I'm about to meet {person} from {company}.
-{about_me}
+{about_me}{linkedin_hint}
 Plan my research across these six angles:
 - role: what this person actually owns day to day and is measured on
 - career_history: their LinkedIn/career trajectory and past companies
@@ -26,7 +32,7 @@ Plan my research across these six angles:
 - how_i_can_help_them: where I could add value to their work or goals
 - how_they_can_benefit_me: what I'd want to learn or ask them
 
-For each angle, give 2 to 3 specific, searchable questions.
+For each angle, give EXACTLY 2 specific, searchable questions (no more), so the research stays fast.
 Write each as something you could paste into a search engine, including the person's name or company where useful.
 Do not hardcode old years like 2024. Use "latest" or "{TODAY}" so searches return current results.
 Return ONLY a JSON object where each key is an angle above and each value is a list of short strings. Nothing else."""

@@ -1,6 +1,11 @@
 import { Link, Outlet } from 'react-router-dom'
+import { useBriefing } from '../BriefingContext'
+import { useAuth } from '../AuthContext'
 
 function Layout() {
+  const { initials } = useBriefing()
+  const { user, signOut } = useAuth()
+
   return (
     <div className="min-h-screen bg-paper text-ink">
       {/* top bar, same as the mockups */}
@@ -15,7 +20,19 @@ function Layout() {
         <nav className="flex items-center gap-7 text-sm text-muted">
           <Link to="/profile" className="hover:text-ink">Profile</Link>
           <Link to="/" className="hover:text-ink">Briefings</Link>
-          <div className="w-9 h-9 rounded-full bg-accent-soft text-accent-ink flex items-center justify-center text-xs font-semibold">BA</div>
+          <div className="flex items-center gap-3">
+            {/* Avatar initials come from the signed-in user's profile name. */}
+            {initials ? (
+              <div className="w-9 h-9 rounded-full bg-accent-soft text-accent-ink flex items-center justify-center text-xs font-semibold" title={user?.email || "Your profile"}>
+                {initials}
+              </div>
+            ) : (
+              <Link to="/profile" className="w-9 h-9 rounded-full bg-[#ECE8E0] text-faint flex items-center justify-center" title="Set up your profile">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+              </Link>
+            )}
+            <button onClick={signOut} className="text-[13px] font-medium text-faint hover:text-ink" title="Sign out">Sign out</button>
+          </div>
         </nav>
       </header>
 
