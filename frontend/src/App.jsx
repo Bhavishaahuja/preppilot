@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import { useBriefing } from './BriefingContext'
 import Layout from './components/Layout.jsx'
 import Login from './pages/Login.jsx'
-import Home from './pages/Home.jsx'
+import MarketingHome from './pages/MarketingHome.jsx'
 import NewMeeting from './pages/NewMeeting.jsx'
 import Profile from './pages/Profile.jsx'
 import Working from './pages/Working.jsx'
@@ -14,7 +14,7 @@ import History from './pages/History.jsx'
 function Splash() {
   return (
     <div className="min-h-screen bg-paper flex items-center justify-center">
-      <span className="h-7 w-7 animate-spin rounded-full border-2 border-[#C7C6EE] border-t-accent" />
+      <span className="h-7 w-7 animate-spin rounded-full border-2 border-[#BCC6D6] border-t-accent" />
     </div>
   )
 }
@@ -39,21 +39,35 @@ function App() {
   }, [session, profileLoaded, profile, location.pathname, navigate])
 
   if (loading) return <Splash />
-  if (!session) return <Login />
+
+  // Logged OUT: `/` is the public marketing front door; everything else routes to sign-in.
+  if (!session) {
+    return (
+      <Routes>
+        <Route path="/" element={<MarketingHome />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    )
+  }
+
   // Wait until we know whether they have a profile, so we don't flash the meeting
   // form before redirecting a new user to onboarding.
   if (!profileLoaded) return <Splash />
 
+  // Logged IN: the app lives behind auth; `/` and `/login` send them into the tool.
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Navigate to="/new" replace />} />
         <Route path="/new" element={<NewMeeting />} />
         <Route path="/history" element={<History />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/working" element={<Working />} />
         <Route path="/briefing" element={<Briefing />} />
       </Route>
+      <Route path="/login" element={<Navigate to="/new" replace />} />
+      <Route path="*" element={<Navigate to="/new" replace />} />
     </Routes>
   )
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
 
 function Login() {
@@ -23,11 +24,13 @@ function Login() {
   return (
     <div className="min-h-screen bg-paper text-ink flex flex-col">
       <header className="flex items-center gap-3 px-14 py-5 border-b border-line">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3D3AA6" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21.5 2.5 11 13" />
-          <path d="M21.5 2.5 15 21l-4-8-8-4 18.5-6.5Z" />
-        </svg>
-        <span className="font-serif text-2xl font-medium tracking-tight">PrepPilot</span>
+        <Link to="/" className="flex items-center gap-3 hover:no-underline">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M21.5 2.5 L10.6 13.4" stroke="#21395C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M21.5 2.5 L14.6 21.5 L10.6 13.4 L2.5 9.4 Z" stroke="#21395C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span className="font-serif text-2xl font-medium tracking-tight">PrepPilot</span>
+        </Link>
       </header>
 
       <div className="flex flex-1 items-center justify-center px-6 py-16">

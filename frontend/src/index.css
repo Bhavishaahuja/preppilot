@@ -7,15 +7,17 @@
   --color-muted: #6C6860;
   --color-faint: #97928A;
   --color-line: #E9E4DA;
-  --color-accent: #3D3AA6;
-  --color-accent-ink: #2E2C82;
-  --color-accent-soft: #ECECFA;
+  --color-accent: #21395C;
+  --color-accent-ink: #17293F;
+  --color-accent-soft: #E7ECF3;
   --color-verified: #0B6B57;
   --color-verified-soft: #E4F3EE;
 
   --font-sans: "IBM Plex Sans", system-ui, sans-serif;
   --font-serif: "Newsreader", Georgia, serif;
 }
+
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
