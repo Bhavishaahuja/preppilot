@@ -8,6 +8,22 @@ import requests
 
 from config import anthropic_client, MODEL
 from research import run_research
+from identity import resolve_identity
+
+
+def filter_research_to_matched(research_data, matched_urls):
+    # Keep only the search results whose URL was confirmed to be the target person.
+    # Drops same-name-stranger results before we write the briefing or list sources.
+    filtered = {}
+    for angle, blocks in research_data.items():
+        new_blocks = []
+        for block in blocks:
+            kept = [r for r in block["results"] if r["url"] in matched_urls]
+            if kept:
+                new_blocks.append({"question": block["question"], "results": kept})
+        if new_blocks:
+            filtered[angle] = new_blocks
+    return filtered
 
 
 def collect_sources(research_data):
@@ -78,7 +94,7 @@ def dossier_to_text(research_data):
     return "\n".join(lines)
 
 
-def write_briefing_json(person, company, dossier_text, user_context):
+def write_briefing_json(person, company, dossier_text, user_context, identity_summary=""):
     # We hand Claude a "tool" whose shape is exactly the briefing we want back.
     # Forcing the tool call means the answer is always valid structured data,
     # so we never have to parse loose JSON text that might be malformed.
@@ -129,10 +145,19 @@ def write_briefing_json(person, company, dossier_text, user_context):
         },
     }
 
+    identity_block = ""
+    if identity_summary:
+        identity_block = f"""
+CONFIRMED IDENTITY of the person I'm meeting:
+{identity_summary}
+"""
+
     prompt = f"""You are a meeting-prep assistant. I'm about to meet {person} from {company}.
 
 Here is context about me, the person you're prepping:
 {user_context}
+{identity_block}
+IDENTITY RULE (critical): This briefing is about ONE specific person — {person} at {company}. The research has already been filtered to them, but stay strict: use a fact only if it clearly belongs to THIS person. Ignore anything that would fit a different person of the same name — a different employer, or a conflicting role, career history, or pronouns. Never blend two people's biographies. If a detail can't be tied to this specific person with confidence, leave it out. Every source URL you attach must be about this person.
 
 Below is raw research gathered from the web, grouped by angle. Each item has a source URL.
 Use ONLY this research (plus what you know about me above). Do not invent anything the research does not support.
@@ -174,15 +199,28 @@ def generate_briefing(person, company, goal, profile, person_linkedin=""):
     photo_future = photo_pool.submit(fetch_target_photo, person_linkedin)
 
     research_data = run_research(person, company, user_context, person_linkedin)
-    dossier_text = dossier_to_text(research_data)
 
-    briefing = write_briefing_json(person, company, dossier_text, user_context)
+    # Disambiguation: figure out which results are actually about the target person
+    # (same employer, coherent role/history/pronouns) and drop same-name strangers.
+    identity = resolve_identity(person, company, goal, person_linkedin, research_data)
+    matched = identity["matched_urls"]
+    # If at least one result was confirmed, brief only on those. If nothing could be
+    # confirmed, keep everything but flag low confidence so we still return something.
+    research_used = filter_research_to_matched(research_data, matched) if matched else research_data
 
-    # Add the metadata and the full source list the UI needs.
+    dossier_text = dossier_to_text(research_used)
+
+    briefing = write_briefing_json(
+        person, company, dossier_text, user_context, identity["summary"]
+    )
+
+    # Add the metadata and the source list the UI needs -- only the confirmed-person sources.
     briefing["person"] = person
     briefing["company"] = company
     briefing["person_linkedin"] = person_linkedin
-    briefing["sources"] = collect_sources(research_data)
+    briefing["sources"] = collect_sources(research_used)
+    briefing["confidence"] = identity["confidence"]
+    briefing["identity_note"] = identity["note"]
 
     try:
         briefing["photo_url"] = photo_future.result(timeout=8)

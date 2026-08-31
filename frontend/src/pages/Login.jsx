@@ -55,6 +55,9 @@ function Login() {
               <p className="text-[14px] leading-relaxed text-[#3B3833]">
                 We sent a sign-in link to <span className="font-medium">{email}</span>. Click it and you'll be dropped right back here, signed in.
               </p>
+              <p className="text-[12.5px] leading-relaxed text-faint">
+                Don't see it in a minute? Check your spam or junk folder — it may land there the first time.
+              </p>
               <button onClick={() => setState("idle")} className="text-[13px] font-medium text-accent hover:text-accent-ink">Use a different email</button>
             </div>
           ) : (

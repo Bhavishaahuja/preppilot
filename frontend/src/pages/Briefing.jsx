@@ -16,6 +16,7 @@ function briefingToText(b) {
   const lines = []
   lines.push(`Pre-Meeting Briefing: ${b.person} / ${b.company}`)
   if (b.person_linkedin) lines.push(b.person_linkedin)
+  if (b.identity_note) lines.push(`Note: ${b.identity_note}`)
   lines.push("")
   lines.push("SNAPSHOT")
   lines.push(b.snapshot || "")
@@ -154,6 +155,16 @@ function Briefing() {
             <button onClick={handleExport} className="h-10 rounded-lg bg-accent px-4 text-[13.5px] font-medium text-white">Export PDF</button>
           </div>
         </div>
+
+        {(briefing.identity_note || briefing.confidence === "low") && (
+          <div className="flex gap-3 rounded-xl border border-[#E8C7A0] bg-[#FBF1E3] p-4 no-print">
+            <svg className="mt-0.5 shrink-0 text-[#B5852F]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+            <div className="text-[13px] leading-normal text-[#7A5A2E]">
+              {briefing.identity_note ||
+                "We couldn't fully confirm this is the right person — some sources may not match. Add their LinkedIn URL or exact job title and re-run for a tighter match."}
+            </div>
+          </div>
+        )}
 
         <Section number="1" title="Snapshot">
           <p className="text-[15px] leading-relaxed text-[#3B3833]">{briefing.snapshot}</p>

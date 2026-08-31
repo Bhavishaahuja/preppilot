@@ -71,6 +71,7 @@ Plan my research across these six angles:
 {angle_lines}
 
 For each angle, give EXACTLY 2 questions, each written so I could paste it straight into a search engine (include the person's name or company where useful).
+This is specifically the {person} who works at {company} — names are often shared, so in every question about the PERSON, pair their name with "{company}" (and their role or location if you know it) so results don't pull in a different person with the same name.
 Do not hardcode old years like 2024. Use "latest" or "{TODAY}" so searches return current results.
 Call the save_research_plan tool with the finished plan."""
 
