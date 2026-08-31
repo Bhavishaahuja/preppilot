@@ -30,12 +30,17 @@ export function BriefingProvider({ children }) {
   const { user, getAccessToken } = useAuth()
   const [status, setStatus] = useState("idle")   // idle | loading | done | error
   const [briefing, setBriefing] = useState(null)
+  const [currentId, setCurrentId] = useState(null)   // id of the saved row being viewed, if any
   const [error, setError] = useState("")
   const [target, setTarget] = useState({ person: "", company: "" })
 
   // The signed-in user's own profile row, which drives the avatar + onboarding gate.
   const [profile, setProfile] = useState(null)
   const [profileLoaded, setProfileLoaded] = useState(false)   // false until we've checked
+
+  // The user's saved briefings, newest first — powers the Home recents + History page.
+  const [history, setHistory] = useState([])
+  const [historyLoaded, setHistoryLoaded] = useState(false)
 
   async function refreshProfile() {
     if (!supabase || !user) {
@@ -50,13 +55,31 @@ export function BriefingProvider({ children }) {
     setProfile(data || null)
   }
 
-  // Load (or clear) the profile whenever the signed-in user changes, and record when
-  // that first check has finished so the app can decide where to route them.
+  // Pull the user's saved briefings (newest first). RLS keeps this to their own rows.
+  async function loadHistory() {
+    if (!supabase || !user) {
+      setHistory([])
+      return
+    }
+    const { data } = await supabase
+      .from("briefings")
+      .select("id, person, company, goal, data, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+    setHistory(data || [])
+  }
+
+  // Load (or clear) the profile + history whenever the signed-in user changes, and record
+  // when the first profile check finishes so the app can decide where to route them.
   useEffect(() => {
     let active = true
     setProfileLoaded(false)
+    setHistoryLoaded(false)
     refreshProfile().finally(() => {
       if (active) setProfileLoaded(true)
+    })
+    loadHistory().finally(() => {
+      if (active) setHistoryLoaded(true)
     })
     return () => { active = false }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,16 +113,66 @@ export function BriefingProvider({ children }) {
       if (!res.ok) throw new Error("The server had a problem building the briefing.")
       const data = await res.json()
       setBriefing(data)
+      setCurrentId(null)
       setStatus("done")
+
+      // Save it to history (best-effort — a save hiccup must never block the briefing).
+      if (supabase && user) {
+        try {
+          const { data: row } = await supabase
+            .from("briefings")
+            .insert({
+              user_id: user.id,
+              person: data.person || person || "",
+              company: data.company || company || "",
+              goal: goal || "",
+              data,
+            })
+            .select("id, person, company, goal, data, created_at")
+            .maybeSingle()
+          if (row) {
+            setHistory((h) => [row, ...h])
+            setCurrentId(row.id)
+          }
+        } catch (saveErr) {
+          console.error("Could not save briefing to history:", saveErr)
+        }
+      }
     } catch (err) {
       setError(err.message || "Something went wrong.")
       setStatus("error")
     }
   }
 
+  // Reopen a saved briefing (from Home recents or the History page).
+  function openBriefing(row) {
+    if (!row?.data) return
+    setBriefing(row.data)
+    setTarget({ person: row.data.person || "", company: row.data.company || "" })
+    setCurrentId(row.id || null)
+    setError("")
+    setStatus("done")
+  }
+
+  // Delete a saved briefing. RLS also enforces ownership server-side.
+  async function deleteBriefing(id) {
+    if (!supabase || !user || !id) return
+    setHistory((h) => h.filter((r) => r.id !== id))   // optimistic
+    const { error: delErr } = await supabase
+      .from("briefings")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id)
+    if (delErr) {
+      console.error("Delete failed, reloading history:", delErr)
+      loadHistory()
+    }
+  }
+
   const value = {
-    status, briefing, error, target, runBriefing,
+    status, briefing, currentId, error, target, runBriefing,
     profile, profileLoaded, userName, initials, refreshProfile,
+    history, historyLoaded, loadHistory, openBriefing, deleteBriefing,
   }
   return <BriefingContext.Provider value={value}>{children}</BriefingContext.Provider>
 }

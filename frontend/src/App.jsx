@@ -4,10 +4,12 @@ import { useAuth } from './AuthContext'
 import { useBriefing } from './BriefingContext'
 import Layout from './components/Layout.jsx'
 import Login from './pages/Login.jsx'
+import Home from './pages/Home.jsx'
 import NewMeeting from './pages/NewMeeting.jsx'
 import Profile from './pages/Profile.jsx'
 import Working from './pages/Working.jsx'
 import Briefing from './pages/Briefing.jsx'
+import History from './pages/History.jsx'
 
 function Splash() {
   return (
@@ -45,7 +47,9 @@ function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<NewMeeting />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/new" element={<NewMeeting />} />
+        <Route path="/history" element={<History />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/working" element={<Working />} />
         <Route path="/briefing" element={<Briefing />} />

@@ -35,7 +35,7 @@ function Working() {
       <div className="flex flex-col items-center gap-4 px-14 py-24 text-center">
         <h1 className="font-serif text-3xl font-medium">Something went wrong</h1>
         <p className="max-w-[440px] text-[15px] text-muted">{error || "The briefing could not be built. Check that the backend is running, then try again."}</p>
-        <button onClick={() => navigate("/")} className="h-11 rounded-lg bg-accent px-6 text-[14.5px] font-medium text-white">Back to start</button>
+        <button onClick={() => navigate("/new")} className="h-11 rounded-lg bg-accent px-6 text-[14.5px] font-medium text-white">Try again</button>
       </div>
     )
   }

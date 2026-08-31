@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useBriefing, initialsFromName } from '../BriefingContext'
 
 // Turn a full URL into a clean domain like "linkedin.com" for the little chips.
@@ -83,6 +83,7 @@ function Section({ number, title, children }) {
 
 function Briefing() {
   const { briefing } = useBriefing()
+  const navigate = useNavigate()
   const [copied, setCopied] = useState(false)
 
   // If someone lands here without running a briefing, send them to start one.
@@ -91,7 +92,7 @@ function Briefing() {
       <div className="flex flex-col items-center gap-4 px-14 py-24 text-center">
         <h1 className="font-serif text-3xl font-medium">No briefing yet</h1>
         <p className="max-w-[420px] text-[15px] text-muted">Start a new meeting to generate a cited briefing.</p>
-        <Link to="/" className="inline-flex h-11 items-center rounded-lg bg-accent px-6 text-[14.5px] font-medium text-white">New meeting</Link>
+        <Link to="/new" className="inline-flex h-11 items-center rounded-lg bg-accent px-6 text-[14.5px] font-medium text-white">New meeting</Link>
       </div>
     )
   }
@@ -119,6 +120,7 @@ function Briefing() {
   const sources = briefing.sources || []
 
   return (
+    <>
     <div className="briefing-grid grid grid-cols-[1fr_360px] items-start gap-10 px-14 py-10">
 
       <div className="flex flex-col gap-8">
@@ -242,6 +244,19 @@ function Briefing() {
       </div>
 
     </div>
+
+    {/* Bottom action: move on to the next person you're prepping for. */}
+    <div className="flex flex-col items-center gap-3 border-t border-line px-14 pb-16 pt-10 no-print">
+      <p className="text-[14px] text-muted">Done here? Prep for your next meeting.</p>
+      <button
+        onClick={() => navigate("/new")}
+        className="inline-flex h-12 items-center gap-2 rounded-lg bg-accent px-7 text-[15px] font-medium text-white hover:bg-accent-ink"
+      >
+        Start a new briefing
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </button>
+    </div>
+    </>
   )
 }
 

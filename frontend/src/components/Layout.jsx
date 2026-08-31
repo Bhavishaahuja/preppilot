@@ -18,8 +18,9 @@ function Layout() {
           <span className="font-serif text-2xl font-medium tracking-tight">PrepPilot</span>
         </Link>
         <nav className="flex items-center gap-7 text-sm text-muted">
+          <Link to="/new" className="hover:text-ink">New briefing</Link>
+          <Link to="/history" className="hover:text-ink">History</Link>
           <Link to="/profile" className="hover:text-ink">Profile</Link>
-          <Link to="/" className="hover:text-ink">Briefings</Link>
           <div className="flex items-center gap-3">
             {/* Avatar initials come from the signed-in user's profile name. */}
             {initials ? (

@@ -69,7 +69,7 @@ function Profile() {
     setStatus("saved")
     await refreshProfile()   // update the top-bar avatar initials right away
     // On first-time setup, flow straight into the first briefing.
-    if (firstTime) navigate("/")
+    if (firstTime) navigate("/new")
   }
 
   return (
