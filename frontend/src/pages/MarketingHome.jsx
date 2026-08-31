@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import BriefingBuilder from '../components/BriefingBuilder'
+import { useAuth } from '../AuthContext'
 
 // Public marketing front door for PrepPilot. Ported 1:1 from the Claude Design
 // handoff (PrepPilot Home.dc.html) — final colors, type, spacing, copy, motion.
@@ -109,6 +110,10 @@ export default function MarketingHome() {
   const rootRef = useRef(null)
   const [showBanner, setShowBanner] = useState(true)
   const showPath = true
+  const { session } = useAuth()
+  // Signed-in visitors land in the app; signed-out visitors go to sign-in.
+  const appHref = session ? '/new' : '/login'
+  const signInLabel = session ? 'Open app' : 'Sign in'
 
   // Scroll reveal via IntersectionObserver (Safari-safe vs. scroll-driven CSS).
   useEffect(() => {
@@ -160,8 +165,8 @@ export default function MarketingHome() {
           </a>
           <nav style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 'clamp(14px,2.5vw,26px)' }}>
             <a href="#how" style={{ font: `400 13.5px/1 ${F_SANS}`, color: '#55514B' }}>How it works</a>
-            <Link to="/login" style={{ font: `400 13.5px/1 ${F_SANS}`, color: '#55514B' }}>Sign in</Link>
-            <Link to="/login" className="pp-cta pp-cta-hdr" style={{ font: `500 13.5px/1 ${F_SANS}`, background: '#21395C', color: '#F6F3EE', padding: '11px 16px', borderRadius: 8 }}>Prep my next meeting</Link>
+            <Link to={appHref} style={{ font: `400 13.5px/1 ${F_SANS}`, color: '#55514B' }}>{signInLabel}</Link>
+            <Link to={appHref} className="pp-cta pp-cta-hdr" style={{ font: `500 13.5px/1 ${F_SANS}`, background: '#21395C', color: '#F6F3EE', padding: '11px 16px', borderRadius: 8 }}>Prep my next meeting</Link>
           </nav>
         </div>
       </header>
@@ -175,7 +180,7 @@ export default function MarketingHome() {
             <h1 style={{ margin: 0, font: `300 clamp(38px,5.2vw,64px)/1.05 ${F_SERIF}`, letterSpacing: '-.022em', color: '#17161A', textWrap: 'pretty' }}>Know exactly who you’re meeting — before you’re in the room.</h1>
             <p style={{ margin: '22px 0 0', maxWidth: '47ch', font: `400 clamp(15px,1.7vw,17.5px)/1.65 ${F_SANS}`, color: '#55514B', textWrap: 'pretty' }}>PrepPilot researches the person and the company across six angles at once, then hands you a structured briefing in about twenty seconds: talking points, sharp questions, and how the two of you can help each other.</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 30 }}>
-              <Link to="/login" className="pp-cta pp-cta-lg" style={{ font: `500 14.5px/1 ${F_SANS}`, background: '#21395C', color: '#F6F3EE', padding: '15px 22px', borderRadius: 9 }}>Prep my next meeting →</Link>
+              <Link to={appHref} className="pp-cta pp-cta-lg" style={{ font: `500 14.5px/1 ${F_SANS}`, background: '#21395C', color: '#F6F3EE', padding: '15px 22px', borderRadius: 9 }}>Prep my next meeting →</Link>
               <a href="#demo" className="pp-sec" style={{ font: `500 14.5px/1 ${F_SANS}`, color: '#17161A', padding: '15px 22px', borderRadius: 9, border: '1px solid #D9D2C6', background: '#FCFAF6' }}>Watch it build a briefing ↓</a>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 22 }}>
@@ -305,7 +310,7 @@ export default function MarketingHome() {
         <section id="start" style={{ padding: '0 0 clamp(56px,8vw,104px)', textAlign: 'center' }} data-reveal>
           <h2 style={{ margin: '0 auto', maxWidth: '16ch', font: `300 clamp(30px,4.6vw,58px)/1.08 ${F_SERIF}`, letterSpacing: '-.022em', color: '#17161A', textWrap: 'pretty' }}>Your next meeting is on the calendar. Walk in ready.</h2>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 28 }}>
-            <Link to="/login" className="pp-cta pp-cta-close" style={{ font: `500 15px/1 ${F_SANS}`, background: '#21395C', color: '#F6F3EE', padding: '16px 26px', borderRadius: 9 }}>Prep my next meeting →</Link>
+            <Link to={appHref} className="pp-cta pp-cta-close" style={{ font: `500 15px/1 ${F_SANS}`, background: '#21395C', color: '#F6F3EE', padding: '16px 26px', borderRadius: 9 }}>Prep my next meeting →</Link>
           </div>
           <p style={{ margin: '20px 0 0', font: `400 12.5px/1.5 ${F_SANS}`, color: '#A29B90' }}>✈ It’s hiring season — there’s no better week to start.</p>
         </section>
@@ -324,7 +329,7 @@ export default function MarketingHome() {
           <nav style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
             <a href="#how" style={{ font: `400 13px/1 ${F_SANS}`, color: '#55514B' }}>How it works</a>
             <a href="#demo" style={{ font: `400 13px/1 ${F_SANS}`, color: '#55514B' }}>Watch a briefing build</a>
-            <Link to="/login" style={{ font: `400 13px/1 ${F_SANS}`, color: '#55514B' }}>Sign in</Link>
+            <Link to={appHref} style={{ font: `400 13px/1 ${F_SANS}`, color: '#55514B' }}>{signInLabel}</Link>
           </nav>
           <div style={{ font: `400 12px/1.65 ${F_SANS}`, color: '#A29B90', maxWidth: '34ch', textWrap: 'pretty' }}>Briefings are researched from public web sources and cited. © 2026 PrepPilot.</div>
         </div>

@@ -55,11 +55,12 @@ function App() {
   // form before redirecting a new user to onboarding.
   if (!profileLoaded) return <Splash />
 
-  // Logged IN: the app lives behind auth; `/` and `/login` send them into the tool.
+  // Logged IN: `/` still shows the marketing home (the logo returns here); the tool
+  // pages live behind the app Layout.
   return (
     <Routes>
+      <Route path="/" element={<MarketingHome />} />
       <Route element={<Layout />}>
-        <Route path="/" element={<Navigate to="/new" replace />} />
         <Route path="/new" element={<NewMeeting />} />
         <Route path="/history" element={<History />} />
         <Route path="/profile" element={<Profile />} />
