@@ -47,12 +47,12 @@ function Login() {
               Sign-in isn't configured yet. Add <code className="font-mono text-[13px]">VITE_SUPABASE_URL</code> and <code className="font-mono text-[13px]">VITE_SUPABASE_ANON_KEY</code> to the frontend environment, then reload.
             </div>
           ) : state === "sent" ? (
-            <div className="flex flex-col items-center gap-3 rounded-2xl border border-[#BFE4DA] bg-verified-soft p-7 text-center">
+            <div className="flex flex-col items-center gap-3 rounded-2xl border border-[#C9DCD0] bg-verified-soft p-7 text-center">
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0B6B57" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16v16H4z" opacity="0"/><path d="M22 6l-10 7L2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E6B4F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16v16H4z" opacity="0"/><path d="M22 6l-10 7L2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
               </span>
               <div className="font-serif text-xl font-medium text-verified">Check your inbox</div>
-              <p className="text-[14px] leading-relaxed text-[#33312D]">
+              <p className="text-[14px] leading-relaxed text-[#3B3833]">
                 We sent a sign-in link to <span className="font-medium">{email}</span>. Click it and you'll be dropped right back here, signed in.
               </p>
               <button onClick={() => setState("idle")} className="text-[13px] font-medium text-accent hover:text-accent-ink">Use a different email</button>
@@ -60,14 +60,14 @@ function Login() {
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 rounded-2xl border border-line bg-card p-7">
               <div className="flex flex-col gap-2">
-                <label className="text-[13px] font-medium text-[#4A4842]">Email</label>
+                <label className="text-[13px] font-medium text-[#3B3833]">Email</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com"
-                  className="w-full h-11 rounded-lg border border-[#E0DAD0] bg-[#FCFBF9] px-3.5 text-[15px] text-ink outline-none focus:border-accent"
+                  className="w-full h-11 rounded-lg border border-[#D9D2C6] bg-[#FFFDF9] px-3.5 text-[15px] text-ink outline-none focus:border-accent"
                 />
               </div>
               {state === "error" && <span className="text-[13px] font-medium text-red-600">{message}</span>}

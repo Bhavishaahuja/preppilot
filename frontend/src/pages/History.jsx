@@ -28,9 +28,9 @@ function History() {
     <div className="flex justify-center px-14 pt-14 pb-20">
       <div className="w-[760px] flex flex-col gap-8">
 
-        <div className="flex flex-col gap-2.5">
-          <span className="self-start rounded-full bg-accent-soft px-3 py-1 text-xs font-medium text-accent-ink">Your briefings</span>
-          <h1 className="font-serif text-4xl font-medium tracking-tight">Past briefings</h1>
+        <div className="flex flex-col gap-3">
+          <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-faint2">Your briefings</span>
+          <h1 className="font-serif text-[38px] leading-[1.08] font-light tracking-[-0.02em] text-ink">Past briefings</h1>
           <p className="max-w-[560px] text-[15px] leading-relaxed text-muted">
             Every briefing you've generated, saved to your account. Open one to read it again or export it.
           </p>
@@ -39,7 +39,7 @@ function History() {
         {/* Empty / loading / list */}
         {!historyLoaded ? (
           <div className="flex justify-center py-16">
-            <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#C7C6EE] border-t-accent" />
+            <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#BCC6D6] border-t-accent" />
           </div>
         ) : history.length === 0 ? (
           <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-line bg-card px-8 py-16 text-center">
@@ -66,14 +66,14 @@ function History() {
                   <div className="flex flex-1 flex-col gap-1">
                     <div className="flex items-center gap-2.5">
                       <span className="font-serif text-[20px] font-medium leading-tight text-ink">{row.person || "Contact"}</span>
-                      <span className="text-[#B4AFA6]">/</span>
+                      <span className="text-[#A29B90]">/</span>
                       <span className="text-[15px] text-muted">{row.company}</span>
                     </div>
                     <div className="flex items-center gap-3 text-[13px] text-faint">
                       <span>{longDate(row.created_at)}</span>
                       {sourceCount > 0 && (
                         <>
-                          <span className="text-[#D9D3C9]">•</span>
+                          <span className="text-[#C9C2B5]">•</span>
                           <span className="inline-flex items-center gap-1 text-verified">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
                             {sourceCount} sources
@@ -81,7 +81,7 @@ function History() {
                         </>
                       )}
                     </div>
-                    {row.goal && <div className="mt-0.5 line-clamp-1 text-[13.5px] text-[#6C6860]">Goal: {row.goal}</div>}
+                    {row.goal && <div className="mt-0.5 line-clamp-1 text-[13.5px] text-[#6B665F]">Goal: {row.goal}</div>}
                   </div>
                   <span className="inline-flex items-center gap-1.5 text-[13.5px] font-medium text-accent opacity-0 transition group-hover:opacity-100">
                     Open

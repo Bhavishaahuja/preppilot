@@ -28,7 +28,7 @@ function Layout() {
                 {initials}
               </div>
             ) : (
-              <Link to="/profile" className="w-9 h-9 rounded-full bg-[#ECE8E0] text-faint flex items-center justify-center" title="Set up your profile">
+              <Link to="/profile" className="w-9 h-9 rounded-full bg-[#EDE7DC] text-faint flex items-center justify-center" title="Set up your profile">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
               </Link>
             )}

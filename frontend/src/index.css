@@ -1,17 +1,30 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #FAF8F3;
-  --color-card: #FFFFFF;
-  --color-ink: #1B1A17;
-  --color-muted: #6C6860;
-  --color-faint: #97928A;
-  --color-line: #E9E4DA;
-  --color-accent: #21395C;
-  --color-accent-ink: #17293F;
-  --color-accent-soft: #E7ECF3;
-  --color-verified: #0B6B57;
-  --color-verified-soft: #E4F3EE;
+  /* Editorial "paper" system — shared across the whole app (matches the home page). */
+  --color-paper: #F6F3EE;        /* page background (warm off-white) */
+  --color-sunken: #F1EDE5;       /* subtle inset panels, hover fills */
+  --color-card: #FCFAF6;         /* cards, panels */
+  --color-raised: #FFFDF9;       /* input fields, inner blocks */
+
+  --color-line: #E4DED3;         /* default 1px borders */
+  --color-line-soft: #EDE7DC;    /* soft dividers */
+  --color-field: #D9D2C6;        /* input borders */
+  --color-rule: #C9C2B5;         /* faint dots / rules */
+
+  --color-ink: #17161A;          /* headlines, primary text */
+  --color-ink2: #3B3833;         /* emphasised body */
+  --color-muted: #55514B;        /* body copy */
+  --color-body-soft: #6B665F;    /* card body copy */
+  --color-faint: #8C877E;        /* kickers, captions */
+  --color-faint2: #A29B90;       /* micro-labels, numerals */
+
+  --color-accent: #21395C;       /* links, primary buttons, logo */
+  --color-accent-ink: #17293F;   /* hover / pressed */
+  --color-accent-soft: #E7ECF3;  /* soft ink-blue fill */
+
+  --color-verified: #2E6B4F;     /* sourced/verified signals only */
+  --color-verified-soft: #EAF1EC;
 
   --font-sans: "IBM Plex Sans", system-ui, sans-serif;
   --font-serif: "Newsreader", Georgia, serif;

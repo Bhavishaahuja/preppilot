@@ -55,7 +55,7 @@ function PersonAvatar({ photoUrl, name }) {
     )
   }
   return (
-    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#ECE8E0] text-[15px] font-semibold text-faint">
+    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#EDE7DC] text-[15px] font-semibold text-faint">
       {initialsFromName(name) || (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
       )}
@@ -130,19 +130,19 @@ function Briefing() {
             <PersonAvatar photoUrl={briefing.photo_url} name={briefing.person} />
             <div className="flex flex-col gap-2.5">
               <div className="text-[13px] font-medium uppercase tracking-wide text-faint">Pre-Meeting Briefing</div>
-              <h1 className="font-serif text-4xl font-medium tracking-tight">
-                {briefing.person} <span className="font-normal text-[#B4AFA6]">/</span> {briefing.company}
+              <h1 className="font-serif text-[40px] leading-[1.06] font-light tracking-[-0.02em] text-ink">
+                {briefing.person} <span className="font-light text-[#A29B90]">/</span> {briefing.company}
               </h1>
               <div className="flex items-center gap-3.5 text-[13.5px] text-muted">
                 <span>Prepared today</span>
-                <span className="text-[#D9D3C9]">•</span>
+                <span className="text-[#C9C2B5]">•</span>
                 <span className="inline-flex items-center gap-1.5 font-medium text-verified">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
                   {sources.length} sources
                 </span>
                 {briefing.person_linkedin && (
                   <>
-                    <span className="text-[#D9D3C9]">•</span>
+                    <span className="text-[#C9C2B5]">•</span>
                     <a href={briefing.person_linkedin} target="_blank" rel="noreferrer" className="font-medium text-accent hover:text-accent-ink">LinkedIn</a>
                   </>
                 )}
@@ -150,13 +150,13 @@ function Briefing() {
             </div>
           </div>
           <div className="flex shrink-0 gap-2 no-print">
-            <button onClick={handleCopy} className="h-10 rounded-lg border border-[#E0DAD0] bg-card px-4 text-[13.5px] font-medium text-[#4A4842] hover:border-accent">{copied ? "Copied!" : "Copy"}</button>
+            <button onClick={handleCopy} className="h-10 rounded-lg border border-[#D9D2C6] bg-card px-4 text-[13.5px] font-medium text-[#3B3833] hover:border-accent">{copied ? "Copied!" : "Copy"}</button>
             <button onClick={handleExport} className="h-10 rounded-lg bg-accent px-4 text-[13.5px] font-medium text-white">Export PDF</button>
           </div>
         </div>
 
         <Section number="1" title="Snapshot">
-          <p className="text-[15px] leading-relaxed text-[#33312D]">{briefing.snapshot}</p>
+          <p className="text-[15px] leading-relaxed text-[#3B3833]">{briefing.snapshot}</p>
         </Section>
 
         <div className="briefing-card flex flex-col gap-3.5">
@@ -165,12 +165,12 @@ function Briefing() {
             {talkingPoints.map((tp, i) => (
               <div key={i} className="flex flex-col gap-2 rounded-xl border border-line bg-card p-5">
                 <div className="text-[14.5px] font-semibold text-ink">{tp.title}</div>
-                <p className="text-[14.5px] leading-snug text-[#4A4842]">{tp.body}</p>
+                <p className="text-[14.5px] leading-snug text-[#3B3833]">{tp.body}</p>
                 {tp.sources && tp.sources.length > 0 && (
                   <div className="flex flex-wrap gap-2 pt-1">
                     {tp.sources.map((url, j) => (
                       <a key={j} href={url} target="_blank" rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-full border border-[#C9E7DE] bg-verified-soft px-2 py-0.5 text-xs font-medium text-verified">
+                        className="inline-flex items-center gap-1.5 rounded-full border border-[#C9DCD0] bg-verified-soft px-2 py-0.5 text-xs font-medium text-verified">
                         {domainOf(url)}
                       </a>
                     ))}
@@ -186,7 +186,7 @@ function Briefing() {
             {questions.map((q, i) => (
               <div key={i} className="flex gap-3">
                 <svg className="mt-0.5 shrink-0 text-accent" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 10h8M8 14h5"/><path d="M21 12a9 9 0 1 1-3.5-7.1L21 5"/></svg>
-                <span className="text-[14.5px] leading-snug text-[#33312D]">{q}</span>
+                <span className="text-[14.5px] leading-snug text-[#3B3833]">{q}</span>
               </div>
             ))}
           </div>
@@ -197,7 +197,7 @@ function Briefing() {
             <SectionHeader number="4" title="How you can help" small />
             <ul className="flex flex-col gap-3">
               {helpThem.map((item, i) => (
-                <li key={i} className="flex gap-2.5 text-[14px] leading-snug text-[#4A4842]"><span className="font-bold text-accent">+</span><span>{item}</span></li>
+                <li key={i} className="flex gap-2.5 text-[14px] leading-snug text-[#3B3833]"><span className="font-bold text-accent">+</span><span>{item}</span></li>
               ))}
             </ul>
           </div>
@@ -205,7 +205,7 @@ function Briefing() {
             <SectionHeader number="5" title="How they can help" small />
             <ul className="flex flex-col gap-3">
               {helpMe.map((item, i) => (
-                <li key={i} className="flex gap-2.5 text-[14px] leading-snug text-[#4A4842]"><span className="font-bold text-verified">&rarr;</span><span>{item}</span></li>
+                <li key={i} className="flex gap-2.5 text-[14px] leading-snug text-[#3B3833]"><span className="font-bold text-verified">&rarr;</span><span>{item}</span></li>
               ))}
             </ul>
           </div>
@@ -222,7 +222,7 @@ function Briefing() {
               All verified
             </div>
           </div>
-          <div className="h-px bg-[#EEE9E0]" />
+          <div className="h-px bg-[#EDE7DC]" />
           <div className="flex flex-col gap-3.5">
             {sources.map((s, i) => (
               <a key={i} href={s.url} target="_blank" rel="noreferrer" className="group flex items-start gap-3">
@@ -237,9 +237,9 @@ function Briefing() {
           </div>
         </div>
 
-        <div className="flex gap-3 rounded-xl border border-[#E1E0F5] bg-[#F4F4FE] p-5 no-print">
+        <div className="flex gap-3 rounded-xl border border-[#D3DDEA] bg-[#E7ECF3] p-5 no-print">
           <svg className="mt-0.5 shrink-0 text-accent" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="M9.5 12l1.8 1.8 3.2-3.6"/></svg>
-          <div className="text-[13px] leading-normal text-[#4A4842]">Built only from live search results. Nothing here is invented. If the research didn't support a claim, PrepPilot left it out.</div>
+          <div className="text-[13px] leading-normal text-[#3B3833]">Built only from live search results. Nothing here is invented. If the research didn't support a claim, PrepPilot left it out.</div>
         </div>
       </div>
 
