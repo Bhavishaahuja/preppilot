@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import { useAuth } from './AuthContext'
 import { useBriefing } from './BriefingContext'
 import Layout from './components/Layout.jsx'
@@ -43,11 +44,14 @@ function App() {
   // Logged OUT: `/` is the public marketing front door; everything else routes to sign-in.
   if (!session) {
     return (
-      <Routes>
-        <Route path="/" element={<MarketingHome />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <>
+        <Routes>
+          <Route path="/" element={<MarketingHome />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        <Analytics />
+      </>
     )
   }
 
@@ -58,18 +62,21 @@ function App() {
   // Logged IN: `/` still shows the marketing home (the logo returns here); the tool
   // pages live behind the app Layout.
   return (
-    <Routes>
-      <Route path="/" element={<MarketingHome />} />
-      <Route element={<Layout />}>
-        <Route path="/new" element={<NewMeeting />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/working" element={<Working />} />
-        <Route path="/briefing" element={<Briefing />} />
-      </Route>
-      <Route path="/login" element={<Navigate to="/new" replace />} />
-      <Route path="*" element={<Navigate to="/new" replace />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<MarketingHome />} />
+        <Route element={<Layout />}>
+          <Route path="/new" element={<NewMeeting />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/working" element={<Working />} />
+          <Route path="/briefing" element={<Briefing />} />
+        </Route>
+        <Route path="/login" element={<Navigate to="/new" replace />} />
+        <Route path="*" element={<Navigate to="/new" replace />} />
+      </Routes>
+      <Analytics />
+    </>
   )
 }
 
