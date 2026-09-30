@@ -16,12 +16,15 @@ from config import SUPABASE_URL, SUPABASE_ANON_KEY
 
 app = FastAPI(title="PrepPilot API")
 
-# Let the React app talk to this API. Localhost in dev, *.vercel.app in production.
+# Let the React app talk to this API. Localhost in dev, preppilot.site and
+# *.vercel.app in production.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://preppilot.site",
+        "https://www.preppilot.site",
     ],
     allow_origin_regex=r"https://.*\.vercel\.app",
     allow_methods=["*"],
