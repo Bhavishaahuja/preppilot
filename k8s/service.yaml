@@ -1,0 +1,14 @@
+# Service = one stable address in front of all the backend pods.
+# Pods come and go with new IPs, the Service name stays the same
+# and spreads requests across whichever pods are ready.
+apiVersion: v1
+kind: Service
+metadata:
+  name: preppilot-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: preppilot-backend
+  ports:
+    - port: 80
+      targetPort: 8000

@@ -1,0 +1,53 @@
+# Deployment = "keep N copies (pods) of this container running".
+# If a pod crashes or fails its liveness probe, Kubernetes replaces it.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: preppilot-backend
+  labels:
+    app: preppilot-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: preppilot-backend
+  template:
+    metadata:
+      labels:
+        app: preppilot-backend
+    spec:
+      containers:
+        - name: backend
+          image: preppilot-backend:local
+          # Never = use the image already on the node, don't try to download it.
+          # The image only exists locally, there is no registry to pull from.
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          # API keys come from the preppilot-secrets Secret, as env vars.
+          envFrom:
+            - secretRef:
+                name: preppilot-secrets
+          # Readiness: "can this pod take traffic yet?" The Service skips it until this passes.
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          # Liveness: "is this pod still alive?" Fails 3 times in a row = restart it.
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+          # requests = what the scheduler reserves, limits = hard ceiling.
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
