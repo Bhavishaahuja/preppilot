@@ -2,7 +2,7 @@
 
 **Meeting prep, on autopilot.** PrepPilot researches whoever you're about to meet and hands you a sourced, structured briefing in about twenty seconds — talking points, sharp questions to ask, and how the two of you can help each other.
 
-🔗 **Live:** [preppilot-alpha.vercel.app](https://preppilot-alpha.vercel.app)
+🔗 **Live:** [www.preppilot.site](www.preppilot.site)
 
 ---
 
