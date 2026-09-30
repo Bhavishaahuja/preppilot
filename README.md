@@ -57,6 +57,8 @@ backend/
   identity.py       identity disambiguation — keeps only the right person
   api_pipeline.py   ties research + identity + briefing together, returns JSON
   config.py         API clients, model, env
+  Dockerfile        container image for the backend
+k8s/                Kubernetes Deployment + Service for the backend
 frontend/
   src/pages/        MarketingHome, Login, Profile, NewMeeting, Working, Briefing, History
   src/components/   Layout, BriefingBuilder (the animated demo)
@@ -92,6 +94,36 @@ npm run dev                          # http://localhost:5173
 - **Frontend → Vercel.** Root `frontend`, build `npm run build`, output `dist`. Env: `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
 - **Backend → Render.** Root `backend`, start `uvicorn main:app --host 0.0.0.0 --port $PORT`. Env: `ANTHROPIC_API_KEY`, `TAVILY_API_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`.
 - **Supabase.** Run the SQL in `db/` (profiles + briefings tables with row-level security), set the auth redirect URLs, and add custom SMTP (Resend) for reliable magic-link delivery.
+
+## Running on Kubernetes (optional)
+
+Production stays on Render + Vercel. The backend also ships as a container with Kubernetes manifests, so it can run on any cluster. Tested on Docker Desktop's built-in Kubernetes (kubeadm).
+
+**Build and run the container** (from the repo root):
+
+```bash
+docker build -t preppilot-backend:local ./backend
+docker run --rm -p 8000:8000 --env-file backend/.env preppilot-backend:local
+curl http://localhost:8000/health        # {"status":"ok"}
+```
+
+**Deploy to the cluster:**
+
+```bash
+# API keys go in as a Secret built from your .env, never baked into the image or committed
+kubectl create secret generic preppilot-secrets --from-env-file=backend/.env
+kubectl apply -f k8s/
+kubectl rollout status deployment/preppilot-backend
+kubectl port-forward svc/preppilot-backend 8080:80
+curl http://localhost:8080/health        # {"status":"ok"}, docs at http://localhost:8080/docs
+```
+
+How it's set up:
+
+- **Image.** `python:3.12-slim`, dependencies installed before code is copied (fast rebuilds), runs as a non-root user. uvicorn runs as PID 1 so it receives SIGTERM and shuts down cleanly. The port reads `$PORT` (Render) and falls back to 8000.
+- **Deployment.** 2 replicas with CPU/memory requests and limits. Readiness and liveness probes hit `GET /health`, which has no auth and no external calls, so probes never spend Anthropic or Tavily credits.
+- **Service.** A ClusterIP Service gives the pods one stable address and load-balances between them.
+- **Local images.** `imagePullPolicy: Never` uses the locally built image. This works with Docker Desktop's kubeadm cluster, which shares Docker's images. A kind cluster can't see local images, so there you'd load the image into the cluster or push it to a registry first.
 
 ## Known limitations & roadmap
 
